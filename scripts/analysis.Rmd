@@ -1,0 +1,86 @@
+---
+title: "analysis"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## packages
+
+```{r}
+library(tidyverse)
+library(scales)
+library(ggpubr)
+```
+
+## data
+
+```{r}
+diner_counts <- read.csv("/Users/kenjinchang/github/ucm-sales/data/diner-counts.csv")
+diner_counts
+```
+
+```{r}
+diner_counts <- diner_counts %>%
+  mutate(period=as.character(period))
+```
+
+
+```{r}
+diner_counts %>%
+  group_by(period,week,mealservice) %>%
+  summarise(sum(diner_count)) 
+```
+
+```{r}
+year_comparison <- diner_counts %>%
+  ggplot(aes(x=period,y=diner_count,fill=period)) +
+  geom_col() + 
+  scale_fill_manual(values=c("royalblue4","mediumseagreen"),name="Year") +
+  scale_y_continuous(labels=comma) +
+  xlab("Year") + 
+  ylab("Diner Count") +
+  theme(panel.grid=element_blank(),panel.background=element_rect(fill="white"),panel.border=element_rect(fill=NA),legend.title=element_text(size=10),legend.text=element_text(size=10),plot.title=element_text(size=10))
+ggsave(filename="year_comparison.png",plot=year_comparison,path="/Users/kenjinchang/github/ucm-sales/figures",width=22,height=16,units="cm",dpi=150,limitsize=TRUE)
+year_comparison
+```
+
+```{r}
+twentyfour <- diner_counts %>%
+  filter(period=="2024") %>%
+  ggplot(aes(x=week,y=diner_count,fill=mealservice)) + 
+  geom_col() + 
+  scale_fill_manual(values=c("royalblue4","mediumseagreen"),name="Meal Service") +
+  scale_y_continuous(labels=comma) +
+  xlab("Week") + 
+  ylab("Diner Count") +
+  labs(title="2024") +
+  theme(panel.grid=element_blank(),panel.background=element_rect(fill="white"),panel.border=element_rect(fill=NA),legend.title=element_text(size=10),legend.text=element_text(size=10),plot.title=element_text(size=10))
+```
+
+```{r}
+twentyfive <- diner_counts %>%
+  filter(period=="2025") %>%
+  ggplot(aes(x=week,y=diner_count,fill=mealservice)) + 
+  geom_col() + 
+  scale_fill_manual(values=c("royalblue4","mediumseagreen"),name="Meal Service") +
+  scale_y_continuous(labels=comma) +
+  xlab("Week") + 
+  ylab("Diner Count") +
+  labs(title="2025") +
+  theme(panel.grid=element_blank(),panel.background=element_rect(fill="white"),panel.border=element_rect(fill=NA),legend.title=element_text(size=10),legend.text=element_text(size=10),plot.title=element_text(size=10))
+```
+
+```{r}
+year_distributions <- ggarrange(twentyfour,twentyfive,
+          labels=c("A","B"),
+          common.legend=TRUE,
+          legend="bottom")
+ggsave(filename="year_distributions.png",plot=year_distributions,path="/Users/kenjinchang/github/ucm-sales/figures",width=34,height=16,units="cm",dpi=150,limitsize=TRUE)
+year_distributions
+```
+
+
+
